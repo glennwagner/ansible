@@ -10,10 +10,10 @@
   with_items:
     - php
     - php-mcrypt
-	- php-pdo
-	- php-mysql
+    - php-pdo
+    - php-mysql
     - wget
-	- bind-utils
+    - bind-utils
  
 - name: Install PowerDNS
   yum: pkg=pdns-server state=installed
@@ -21,7 +21,6 @@
 - name: Configure PowerDNS using Template
   template: src=pdns.conf.j2 dest=/etc/pdns/
   
-	
 #- name: download poweradmin
 #  get_url: url=https://github.com/downloads/poweradmin/poweradmin/poweradmin-2.1.6.tgz dest=/root/ mode=0440
 
@@ -41,12 +40,14 @@
   service: name=pdns state=restarted
   
 - name: Ensure Firewall Rules are in place for Powerdns
-  lineinfile: dest=/etc/sysconfig/iptables insertafter=":OUTPUT" line="-A INPUT -m state --state NEW -m tcp -p tcp --dport 53 -j ACCEPT"
-  lineinfile: dest=/etc/sysconfig/iptables insertafter=":OUTPUT" line="-A INPUT -m state --state NEW -m udp -p udp --dport 53 -j ACCEPT"
+  command: /sbin/iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 53 -j ACCEPT
+  command: /sbin/iptables -A INPUT -m state --state NEW -m udp -p udp --dport 53 -j ACCEPT
+  sudo: true
 
+  
+- name: save iptables
+  command: iptables-save
+  sudo: true
+  
 - name: restart iptables
   service: name=iptables state=restarted
-
-	
-	
-
