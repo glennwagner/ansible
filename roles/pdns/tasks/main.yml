@@ -8,14 +8,13 @@
 - name: Install basic utilities and tools
   yum: name={{ item }} state=present
   with_items:
-     - php
+    - php
     - php-mcrypt
 	- php-pdo
 	- php-mysql
     - wget
 	- bind-utils
  
-
 - name: Install PowerDNS
   yum: pkg=pdns-server state=installed
 
