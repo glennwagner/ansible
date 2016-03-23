@@ -1,0 +1,7 @@
+--- 
+- hosts: SBC2-DNS1
+  roles: 
+  - mysql  
+  - pdns
+   
+ 
