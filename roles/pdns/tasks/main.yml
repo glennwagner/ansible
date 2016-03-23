@@ -41,6 +41,9 @@
   
 - name: Ensure Firewall Rules are in place for Powerdns
   command: /sbin/iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 53 -j ACCEPT
+  sudo: true
+ 
+- name: Ensure Firewall Rules are in place for Powerdns 
   command: /sbin/iptables -A INPUT -m state --state NEW -m udp -p udp --dport 53 -j ACCEPT
   sudo: true
 
