@@ -1,56 +1,41 @@
 ---
 
-- name: Ensure EPEL is available (centOS6) 
-  yum: name="{{ epel6 }}" state=present
-  ignore_errors: true
-  when: ansible_distribution_major_version == "6"
-
 - name: Install basic utilities and tools
   yum: name={{ item }} state=present
   with_items:
-    - php
-    - php-mcrypt
-    - php-pdo
-    - php-mysql
+    - epel-release
     - wget
     - bind-utils
- 
+
 - name: Install PowerDNS
-  yum: pkg=pdns-server state=installed
+  yum: pkg=pdns state=installed
 
 - name: Configure PowerDNS using Template
   template: src=pdns.conf.j2 dest=/etc/pdns/
-  
+
 #- name: download poweradmin
 #  get_url: url=https://github.com/downloads/poweradmin/poweradmin/poweradmin-2.1.6.tgz dest=/root/ mode=0440
 
 # Unarchive a file that is already on the remote machine
 #- unarchive: src=/root/poweradmin-2.1.6.tgz dest=/root copy=no
 
-# name: Move Poweradmin Config file 
-#  command: mv /root/poweradmin-2.1.6/inc/config-me.inc.php /root/poweradmin-2.1.6/inc/config.inc.php  
-  
-# name: Move Poweradmin to httpd www root  
-#  command: mv /root/poweradmin-2.1.6/* /var/www/html/   
+# name: Move Poweradmin Config file
+#  command: mv /root/poweradmin-2.1.6/inc/config-me.inc.php /root/poweradmin-2.1.6/inc/config.inc.php
+
+# name: Move Poweradmin to httpd www root
+#  command: mv /root/poweradmin-2.1.6/* /var/www/html/
 
 #- name: restart http
 #  service: name=httpd state=start
 
 - name: restart Powerdns
   service: name=pdns state=restarted
-  
-- name: Ensure Firewall Rules are in place for Powerdns
-  command: /sbin/iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 53 -j ACCEPT
-  sudo: true
- 
-- name: Ensure Firewall Rules are in place for Powerdns 
-  command: /sbin/iptables -A INPUT -m state --state NEW -m udp -p udp --dport 53 -j ACCEPT
-  sudo: true
 
-  
-- name: save iptables
-  command: iptables-save
-  sudo: true
-  
+- name: Ensure Firewall Rules are in place for Powerdns
+  lineinfile: dest=/etc/sysconfig/iptables insertafter=":OUTPUT" line="-A INPUT -m state --state NEW -m tcp -p tcp --dport 53 -j ACCEPT"
+
+- name: Ensure Firewall Rules are in place for Powerdns
+  lineinfile: dest=/etc/sysconfig/iptables insertafter=":OUTPUT" line="-A INPUT -m state --state NEW -m udp -p udp --dport 53 -j ACCEPT"
+
 - name: restart iptables
   service: name=iptables state=restarted
