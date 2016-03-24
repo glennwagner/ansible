@@ -10,6 +10,9 @@
 - name: Install PowerDNS
   yum: pkg=pdns state=installed
 
+- name: Install PowerDNS mysql plugin
+  yum: pkg=pdns-backend-mysql state=installed  
+  
 - name: Configure PowerDNS using Template
   template: src=pdns.conf.j2 dest=/etc/pdns/pdns.conf
 
